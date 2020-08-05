@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 主配置文件中的标签是有顺序的
+properties settings typAliases typeHandlers objectFactory,objectWrapperFactory,reflectorFactory,
+plugins,environments,databaseldProvider,mappers
+ -->
+<configuration>
+    <settings>
+<!--         主配置文件中二级缓存的开关是总开关   默认情况下是开启的 如果在主配置文件开启二级缓存的总开关
+             如果想在主配置文件禁用二级缓存 必须把value="" 设置为false
+
+-->
+        <setting name="cacheEnabled" value="true"></setting>
+    </settings>
+    <!--配置别名的集  注意: 要放在主配置文件开头 -->
+    <typeAliases>
+        <!--
+        type="全类名" alias="别名"
+        配置了别名后 在xml映射器可以直接使用别名
+        可以配置多个别名
+        -->
+        <typeAlias type="com.max.dao.User" alias="User"/>
+        <typeAlias type="com.max.dao.Student" alias="Student"/>
+        <typeAlias type="com.max.dao.Emp" alias="Emp"></typeAlias>
+        <typeAlias type="com.max.dao.Dept" alias="Dept"></typeAlias>
+    </typeAliases>
+    <environments default="development">
+        <environment id="development">
+            <!--连接的数据源这里使用的是JDBC的方式，也可以用其他的连接方式-->
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://39.107.83.159:3306/Max" />
+                <property name="username" value="Max" />
+                <property name="password" value="123456" />
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+<!--        &lt;!&ndash;纯xml映射&ndash;&gt;-->
+<!--        <mapper resource="com/max/mapper/StudentMapper.xml"/>-->
+<!--        &lt;!&ndash;接口+映射器&ndash;&gt;-->
+<!--        <mapper resource="com/max/mapper/StudentInMapper.xml"></mapper>-->
+<!--        <mapper class="com.max.dao.StudentIn"></mapper>-->
+<!--        &lt;!&ndash;当有很多接口+映射器时就会写非常多 因此可以配置包名 可以 引入该包下的所有带注解接口&ndash;&gt;-->
+<!--        <package name="xxxxxx.xxxx.xxxx"/>-->
+<!--        <mapper resource="com/max/mapper/StudentMapper.xml"></mapper>-->
+<!--        <mapper resource="com/max/mapper/DynamicSqlMapper.xml"></mapper>-->
+<!--        <mapper resource="com/max/mapper/StudentCURDMapper.xml"></mapper>-->
+<!--        <mapper resource="com/max/mapper/EmpMapper.xml"></mapper>-->
+<!--        <mapper resource="com\max\mapper\DeptMapper.xml"></mapper>-->
+<!--        <mapper resource="com\max\mapper\ParamMapper.xml"></mapper>-->
+<!--       package 可以用来引用纯接口映射器注解方式的 name值是接口所在的包 只要引用了包
+           这个包下所有的接口映射器都能使用
+           在mappers中同时存在 mapper标签和package标签时 mapper标签要放在package后面
+ -->
+        <package name="com.max"></package>
+
+
+    </mappers>
+
+
+</configuration>

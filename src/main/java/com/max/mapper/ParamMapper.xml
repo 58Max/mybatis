@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.max.dao.ParamMapper">
+    <select id="select" resultType="Map" parameterType="Integer">
+        select * from student limit #{num}
+    </select>
+
+    <select id="select1" resultType="Map" parameterType="String">
+        select * from student where name = ${name}
+    </select>
+
+<!--
+ 这里面使用like 模糊查询时  使用$是正确的 因为解析完成后
+ ‘%#{}%’
+ select * from student where name like '%#{name}%'
+ 是 '%''%'
+ 而 '%${}%'
+  select * from student where name like '%${name}%'
+ 解析完成后是 ‘% %’
+   -->
+    <select id="select2" resultType="Map" parameterType="String">
+        select * from student where name like '%${name}%'
+    </select>
+
+    <select id="select3" resultType="Map" parameterType="String">
+        select * from student where name like #{name}
+    </select>
+
+</mapper>

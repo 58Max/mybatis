@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.max.dao.DynamicSqlMapper">
+    <!--
+    当SQL出现 缺少属性值的情况，想要SQL跟着参数的变化而实现动态变化 此时我们需要使用动态SQL
+    -->
+    <!--
+    动态SQL
+    -->
+
+      <insert id="insert" parameterType="Student">
+          insert into student
+          (
+          id
+          <!-- test 里面的name不是字段 而是 #{name},#{sex},#{age}里的属性name,sex,age-->
+          <if test="name != null">,name</if>
+          <if test="age != null">,age</if>
+          <if test="sex != null">,sex</if>
+          )
+          values
+          (
+          #{id}
+          <if test="name != null">,#{name}</if>
+          <if test="age != null">,#{age}</if>
+          <if test="sex != null">,#{sex}</if>
+          );
+      </insert>
+
+    <select id="selectStu" resultType="Map" parameterType="Student">
+        select * from  student
+        <!--where标签 假设被where标签包含的部分没有SQL段 那么我们的SQL便不会拼接where
+        如果where标签包含的部分有SQL段  mybatis会自动的在主题的SQL后面先拼接where
+        然后去除紧跟where的第一个and字符串
+        -->
+        <where>
+            <if test="id != null">and id = #{id}</if>
+            <if test="name != null">and name = #{name}</if>
+        </where>
+    </select>
+
+    <select id="selectByAge" parameterType="Integer" resultType="Map">
+        <!--
+        根据年龄查询student表 如果年龄小于15只查询 姓名 字段 如果年龄大于20只查询 姓名 和 性别 字段
+        如果不是以上条件的 查询姓名 性别 和 班级 字段
+        在 mybatis 小于号使用 lt 替代;大于号 使用 gt 替代
+        <= lte >= gte
+        -->
+        select
+         <choose>
+             <when test="age lt 15">name</when>
+             <when test="age gt 20">name,sex</when>
+             <otherwise>name,sex,classes</otherwise>
+         </choose>
+         from student where age = #{age}
+    </select>
+
+    <!--
+    在update中如果有的值是null 就不要去set值了
+    如果使用if标签可能会出现
+     多逗号 使用set标签替代set把需要改的字段括起来 这样就可以自动去掉多余的逗号
+    -->
+    <update id="updateStu" parameterType="Student">
+        update student
+        <set>
+        <if test="name != null">name = #{name},</if>
+        <if test="age != null">age = #{age},</if>
+        <if test="sex != null"> sex = #{sex}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--
+    foreach标签 迭代数组或集合的参数 把所有参数组装成一个字符串
+    要传递一个id数组 根据id数组查询学生表 需要使用 foreach标签
+    collection="array/list" 遍历的是集合还是数组
+    item="" 临时变量名 open="" 以什么开头 close="" 以什么结尾 separator="" 以什么做分隔符
+    -->
+    <select id="selectStuByIds" parameterType="Integer[]" resultType="Map">
+        select * from student where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--
+    foreach 完成批量插入操作
+    -->
+    <insert id="insertStus" parameterType="Student">
+        insert into student(id,name) values
+        <foreach collection="list" item="stu" open="" close="" separator=",">
+            (#{stu.id},#{stu.name})
+        </foreach>
+    </insert>
+
+    <!--
+    include标签 可以事先使用SQL标签预置SQL段，在需要的地方引用include标签引用这些SQL
+    sql标签id值唯一
+    -->
+    <sql id="colums">
+
+    </sql>
+<!--
+关联查询
+-->
+    <!--
+    一对一或者多对一关系
+    -->
+
+
+</mapper>

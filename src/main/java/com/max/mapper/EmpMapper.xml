@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+当xml映射器与接口混合使用时 mapper标签的namespace属性就是接口的全类名
+-->
+<mapper namespace="com.max.dao.EmpMapper">
+    <resultMap id="empMap" type="Emp">
+        <id property="id" column="id" ></id>
+        <result  property="eName" column="e_name"></result>
+        <result  property="sex" column="sex"></result>
+        <result  property="eNo" column="e_no"></result>
+        <result  property="dId" column="d_id"></result>
+    </resultMap>
+
+    <resultMap id="empAndDeptMap" type="Emp" extends="empMap">
+<!--        在这里的修改会覆盖继承的result的相应标签  -->
+        <id property="id" column="eid" ></id>
+<!--       为了提高代码的复用性 resultMap可以继承其他的resultMap -->
+<!--        <id property="id" column="id" ></id>-->
+<!--        <result  property="eName" column="e_name"></result>-->
+<!--        <result  property="sex" column="sex"></result>-->
+<!--        <result  property="eNo" column="e_no"></result>-->
+<!--        <result  property="dId" column="d_id"></result>-->
+        <!--
+        property="dept" emp类的dept属性名
+        column="id" 根据关联查询条件 on e.d_id = d.id dept表与emp表的关联字段是dept表的id字段
+        javaType="Dept" emp类的dept属性类型是Dept类
+        resultMap="com.max.mapper.DeptMapper.deptMap"
+        emp类的dept属性对应的resultMap 如果这个resultMao不在当前的xml配置文件中，值就要写成resultMap
+        所在配置文件的namespace.resultMap的id
+
+        -->
+<!--        这个标签 适用于多对一  一对一 查询-->
+        <association property="dept" column="id" javaType="Dept" resultMap="com.max.dao.DeptMapper.deptMap" ></association>
+    </resultMap>
+
+    <!--
+     在关联查询中 哪个是主表就把这个查询写在哪个xml文件中
+     查询字段使用 select * 时 当两个表中字段名相同时会以第一个字段名数值为准
+     我们可以通过给其中一个字段加别名来保证没有重名的字段 确保值的传递正确
+     加了别名的字段要在resultMap中修改 属性与子段的映射
+    -->
+    <select id="select" resultMap="empAndDeptMap">
+    select
+    e.id eid,e.e_name,e.sex,e.e_no,e.d_id,d.id ,d.d_name,d.d_no,d.d_desc
+     from emp e left join dept d on e.d_id = d.id
+    </select>
+
+</mapper>

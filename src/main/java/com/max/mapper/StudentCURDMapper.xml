@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--当使用接口和xml映射器混合时 mapper的namespace属性应该是接口的全类名-->
+<mapper namespace="com.max.mapper.StudentCURDMapper">
+    <!--
+    当类属性与表字段名不一致时必须用 一致也可以用
+    type 是这个结果集映射的表对应的实体类的全路径
+    id 唯一的表示
+    property 类属性 对应bean中类属性
+    column 字段名  对应数据库的字段名
+    -->
+    <resultMap type="com.max.dao.Student" id="resultMap01">
+        <id property="id" column="id"></id>
+        <!--类的普通属性对应表的普通字段使用result标签-->
+        <result property="name" column="name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="classes" column="classes"></result>
+        <result property="servlet" column="servlet"></result>
+        <result property="jsp" column="jsp"></result>
+    </resultMap>
+
+
+
+    <!--增加-->
+    <insert id="insert01" parameterType="com.max.dao.Student">
+        insert into student(id,name) values (#{id},#{name});
+    </insert>
+
+    <!--修改-->
+    <update id="updata01" parameterType="com.max.dao.Student">
+        update student set name = #{name},age = #{age} where id = #{id};
+    </update>
+
+    <!--删除-->
+    <delete id="delete01" parameterType="com.max.dao.Student">
+        delete from student where id = #{id};
+    </delete>
+
+
+    <!--查询  在select标签中要不要使用parameterType取决于查询有没有条件 需不需要传递参数-->
+    <!--单一查询-->
+    <select id="select01" parameterType="com.max.dao.Student" resultMap="resultMap01">
+        select * from student where id = #{id};
+    </select>
+    <!--多查询 因为没有查询条件不需要传递参数所以不需要parameterType-->
+    <select id="select02" resultMap="resultMap01">
+        select * from student;
+    </select>
+    <!--
+   当类属性名与表的字段名完全一致时可以使用resultType属性
+   -->
+    <select id="select03" resultType="com.max.dao.User">
+        select * from user;
+    </select>
+
+    <!--
+    当参数是一个时
+    当parameterType是8种数据类型和String时#{id}这个里面的id可以随意写不必和接口的方法的参数名一致
+    -->
+    <select id="select04" resultType="com.max.dao.User" parameterType="Integer">
+        select * from user where id = #{id};
+    </select>
+    <!--
+    当做查询的时候，不是必需要使用实体类或者实体类的resultMap
+    可以使用Map集合来接受结果集，当结果集是一个List集合是可以使用List<Map>来接受结果
+    写法resultType="Map" 适合于一次性的查询结果 如果复用最好封装成实体类
+    小技巧 传两个参数不愿意写一个实体类 在接口参数注解说明与xml的参数对应 以此类推
+    -->
+
+</mapper>

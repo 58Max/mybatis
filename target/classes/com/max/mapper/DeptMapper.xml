@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.max.dao.DeptMapper">
+  <!-- Mapper文件默认不开启二级缓存 需要配置 cache 标签开启  对该namespace下都生效
+  二级缓存也可以对某个SQL设置 useCache
+  二级缓存是以namespace为单位的 相同的namespace下的操作可能会使缓存清除 不同那么namespace的操作互不影响
+  在不同的namespace下操作同一张表不会使缓存发生变化 namespace A 查询 user表 写入二级缓存 namespace B
+  新增user表 A表不会感知，A的二级缓存并不会清除缓存，此时user表发生变化；
+   namespace A  再次查询user表 不会连接数据库查询
+  而是直接从二级缓存中读取 最好使用较为成熟的 第三 缓存方案
+  -->
+    <cache/>
+    <resultMap id="deptMap" type="Dept">
+        <id property="id" column="id" ></id>
+        <result  property="dName" column="d_name"></result>
+        <result  property="dNo" column="d_no"></result>
+        <result  property="dDesc" column="d_desc"></result>
+    </resultMap>
+    <!--一对多-->
+    <resultMap id="deptAndEmpMapper" type="Dept" extends="deptMap">
+        <id property="id" column="did"></id>
+        <!--
+         ofType
+         collection标签 用来配置实体类的集合型属性
+         property  实体类的集合型属性的属性名
+         ofType 实体类的集合型属性的泛型
+         resultMap 实体类的集合型的泛型的resultMap
+        -->
+        <collection property="emps" ofType="Emp" resultMap="com.max.dao.EmpMapper.empMap"></collection>
+    </resultMap>
+
+
+    <!--
+    一对多
+    -->
+    <select id="select" resultMap="deptAndEmpMapper">
+    select
+    e.id ,e.e_name,e.sex,e.e_no,e.d_id,d.id did,d.d_name,d.d_no,d.d_desc
+    from dept d left join emp e on d.id = e.d_id
+    </select>
+
+</mapper>
